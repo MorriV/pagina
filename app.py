@@ -160,13 +160,73 @@ def crear_app():
     def tecnico_panel():
         return render_template('pdc.html')
 
+    # Ruta para levantar un reporte
     @app.route('/levantar_reporte', methods=['GET', 'POST'])
-    @login_required(role='tecnico')
+    @login_required(role='tecnico')  # Proteger la ruta solo para técnicos
     def levantar_reporte():
         if request.method == 'POST':
-            # Manejo de reportes levantados
-            pass
-        return render_template('levantar_reporte.html')
+            # Capturar los datos del formulario
+            cliente = request.form['cliente']
+            direccion = request.form['direccion']
+            equipo = request.form['equipo']
+            fecha = request.form['fecha']
+            bloque_mantenimiento_momb = request.form.get('bloque_mantenimiento')
+            cie = request.form['cie']
+            resumen = request.form['resumen']
+            refaccion = request.form['refaccion']
+            equipo_parado = request.form['equipo_parado']
+            equipo_funcionando = request.form['equipo_funcionando']
+
+            # Capturar checkboxes de bloques y puntos de seguridad
+            bloques = {
+                "reparacion": 'reparacion' in request.form.getlist('bloque[]'),
+                "mantenimiento": 'mantenimiento' in request.form.getlist('bloque[]'),
+                "falla_averia": 'falla_averia' in request.form.getlist('bloque[]'),
+                "fallas_24_7": 'fallas_24_7' in request.form.getlist('bloque[]'),
+                "emergencia_24_7": 'emergencia_24_7' in request.form.getlist('bloque[]'),
+                "diagnostico_tecnico": 'diagnostico_tecnico' in request.form.getlist('bloque[]'),
+                "traslado_logistica": 'traslado_logistica' in request.form.getlist('bloque[]'),
+                "levantamiento_datos_tecnicos": 'levantamiento_datos_tecnicos' in request.form.getlist('bloque[]'),
+                "modernizacion": 'modernizacion' in request.form.getlist('bloque[]'),
+                "montaje_nuevo": 'montaje_nuevo' in request.form.getlist('bloque[]'),
+            }
+
+            puntos = {
+                "micro_inf_final": 'micro_inf_final' in request.form.getlist('seguridad[]'),
+                "micro_sup_final": 'micro_sup_final' in request.form.getlist('seguridad[]'),
+                "stop_foso": 'stop_foso' in request.form.getlist('seguridad[]'),
+                "micro_lim_vel": 'micro_lim_vel' in request.form.getlist('seguridad[]'),
+                "micro_acunamiento": 'micro_acunamiento' in request.form.getlist('seguridad[]'),
+                "micro_polea_tensora": 'micro_polea_tensora' in request.form.getlist('seguridad[]'),
+                "micro_puertas_cab": 'micro_puertas_cab' in request.form.getlist('seguridad[]'),
+                "micro_puertas_ext": 'micro_puertas_ext' in request.form.getlist('seguridad[]'),
+                "stop_techo_cabina": 'stop_techo_cabina' in request.form.getlist('seguridad[]'),
+            }
+
+            # Guardar los datos en la base de datos
+            conn = get_db_connection()
+            conn.execute('''
+                INSERT INTO reportes (
+                    id_usuario, cliente, direccion, equipo, fecha, bloque_mantenimiento_momb, cie, resumen_actividad, 
+                    refaccion_componente, equipo_parado, equipo_funcionando, reparacion, mantenimiento, falla_averia, 
+                    fallas_24_7, emergencia_24_7, diagnostico_tecnico, traslado_logistica, 
+                    levantamiento_datos_tecnicos, modernizacion, montaje_nuevo, micro_inf_final, micro_sup_final, 
+                    stop_foso, micro_lim_vel, micro_acunamiento, micro_polea_tensora, micro_puertas_cab, 
+                    micro_puertas_ext, stop_techo_cabina
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            ''', (
+                session.get('user_id'), cliente, direccion, equipo, fecha, bloque_mantenimiento_momb, cie, resumen,
+                refaccion, equipo_parado, equipo_funcionando, 
+                *bloques.values(), *puntos.values()
+            ))
+            conn.commit()
+            conn.close()
+
+            return redirect('/pdc')  # Redirigir al panel del técnico
+        else:
+            return render_template('levantar_reporte.html')  # Renderiza el formulario
+
+
 
     @app.route('/ver_reportes')
     @login_required(role='tecnico')
