@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Editar Reporte</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/editar_reporte.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>Editar Reporte</h1>
+        <form method="POST">
+            <label for="cliente">Cliente:</label>
+            <input type="text" id="cliente" name="cliente" value="{{ reporte.cliente }}">
+
+            <label for="direccion">Dirección:</label>
+            <input type="text" id="direccion" name="direccion" value="{{ reporte.direccion }}">
+
+            <label for="equipo">Equipo:</label>
+            <input type="text" id="equipo" name="equipo" value="{{ reporte.equipo }}">
+
+            <label for="fecha">Fecha:</label>
+            <input type="date" id="fecha" name="fecha" value="{{ reporte.fecha }}">
+
+            <label for="bloque_mantenimiento">Bloque de Mantenimiento (MOMB):</label>
+            <input type="text" id="bloque_mantenimiento" name="bloque_mantenimiento" value="{{ reporte.bloque_mantenimiento_momb }}">
+
+            <label for="cie">CIE (Control Interno de Equipo):</label>
+            <input type="text" id="cie" name="cie" value="{{ reporte.cie }}">
+
+            <label for="resumen">Resumen de Actividad:</label>
+            <textarea id="resumen" name="resumen">{{ reporte.resumen_actividad }}</textarea>
+
+            <label for="refaccion">Refacción o Componente por Sustituir:</label>
+            <textarea id="refaccion" name="refaccion">{{ reporte.refaccion_componente }}</textarea>
+
+            <label for="equipo_parado">Equipo Parado:</label>
+            <select id="equipo_parado" name="equipo_parado">
+                <option value="Sí" {% if reporte.equipo_parado %}selected{% endif %}>Sí</option>
+                <option value="No" {% if not reporte.equipo_parado %}selected{% endif %}>No</option>
+            </select>
+
+            <label for="equipo_funcionando">Equipo Funcionando:</label>
+            <select id="equipo_funcionando" name="equipo_funcionando">
+                <option value="Sí" {% if reporte.equipo_funcionando %}selected{% endif %}>Sí</option>
+                <option value="No" {% if not reporte.equipo_funcionando %}selected{% endif %}>No</option>
+            </select>
+
+            <h3>Bloques de Mantenimiento</h3>
+{% for key, value in bloques.items() %}
+<label>
+    <input type="checkbox" name="{{ key }}" {% if value %}checked{% endif %}>
+    {{ key.replace('_', ' ') }}
+</label>
+{% endfor %}
+
+<h3>Puntos de Seguridad</h3>
+{% for key, value in puntos.items() %}
+<label>
+    <input type="checkbox" name="{{ key }}" {% if value %}checked{% endif %}>
+    {{ key.replace('_', ' ') }}
+</label>
+{% endfor %}
+
+
+            <button type="submit">Guardar Cambios</button>
+            <a href="/apdc">Cancelar</a>
+        </form>
+    </div>
+</body>
+</html>

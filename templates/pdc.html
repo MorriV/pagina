@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel de Control</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/pdc.css') }}">
+</head>
+<body>
+    <div class="pdc-container">
+        <h1>Panel de Control</h1>
+        <button onclick="location.href='/ver_reportes'">Ver reportes</button>
+        <button onclick="location.href='/levantar_reporte'">Levantar reporte</button>
+    </div>
+</body>
+</html>

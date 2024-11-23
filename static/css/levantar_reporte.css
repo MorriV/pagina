@@ -1,0 +1,78 @@
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: linear-gradient(135deg, #4a90e2, #005082);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding: 10px;
+}
+.form-container {
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    width: 100%;
+    max-width: 400px;
+}
+.form-container h1 {
+    font-size: 24px;
+    text-align: center;
+    color: #005082;
+    margin-bottom: 20px;
+}
+.form-container label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+    color: #333;
+}
+.form-container input,
+.form-container select,
+.form-container textarea {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 15px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 16px;
+    box-sizing: border-box;
+}
+.form-container textarea {
+    resize: vertical;
+}
+.form-container .checkbox-group {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr); /* Dos columnas */
+    gap: 10px;
+    margin-bottom: 20px;
+}
+.form-container .checkbox-group label {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 14px;
+}
+.form-container .section-title {
+    font-size: 18px;
+    color: #005082;
+    margin: 20px 0 10px;
+    font-weight: bold;
+    border-bottom: 2px solid #ccc;
+    padding-bottom: 5px;
+}
+.form-container button {
+    width: 100%;
+    padding: 10px;
+    font-size: 16px;
+    background-color: #007BFF;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+.form-container button:hover {
+    background-color: #0056b3;
+}

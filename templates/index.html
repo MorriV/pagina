@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Elevadores MRM</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/index.css') }}">
+</head>
+<body>
+    <div class="login-container">
+        <img src="{{ url_for('static', filename='img/logo.png') }}" alt="Logo">
+        {% if error %}
+        <div class="error-message">{{ error }}</div>
+        {% endif %}
+        <form action="/login" method="POST">
+            <div class="input-group">
+                <img src="{{ url_for('static', filename='img/user-icon.png') }}" alt="Ícono de usuario">
+                <input type="text" name="usuario" placeholder="Usuario" required>
+            </div>
+            <div class="input-group">
+                <img src="{{ url_for('static', filename='img/lock-icon.png') }}" alt="Ícono de candado">
+                <input type="password" name="password" placeholder="Contraseña" required>
+            </div>
+            <button type="submit">Entrar</button>
+        </form>
+    </div>
+</body>
+</html>

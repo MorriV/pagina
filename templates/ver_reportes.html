@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ver Reportes</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/ver_reportes.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>Ver Reportes</h1>
+
+        <!-- Tabla de reportes -->
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Fecha</th>
+                        <th>Cliente</th>
+                        <th>Dirección</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for report in reports %}
+                    <tr onclick="selectReport({{ loop.index0 }})">
+                        <td>{{ report['fecha'] }}</td>
+                        <td>{{ report['cliente'] }}</td>
+                        <td>{{ report['direccion'] }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Formulario para mostrar el reporte seleccionado -->
+        <div class="form-container">
+            <h2>Reporte</h2>
+            <form>
+                <label for="cliente">Cliente:</label>
+                <input type="text" id="cliente" readonly>
+
+                <label for="direccion">Dirección:</label>
+                <input type="text" id="direccion" readonly>
+
+                <label for="equipo">Equipo:</label>
+                <input type="text" id="equipo" readonly>
+
+                <label for="fecha">Fecha:</label>
+                <input type="text" id="fecha" readonly>
+
+                <label for="bloque_mantenimiento">Bloque de Mantenimiento (MOMB):</label>
+                <input type="text" id="bloque_mantenimiento" readonly>
+
+                <label for="cie">CIE (Control Interno de Equipo):</label>
+                <input type="text" id="cie" readonly>
+
+                <label for="resumen">Resumen de Actividad:</label>
+                <textarea id="resumen" readonly></textarea>
+
+                <label for="refaccion">Refacción o Componente por Sustituir:</label>
+                <textarea id="refaccion" readonly></textarea>
+
+                <label for="equipo_parado">Equipo Parado:</label>
+                <input type="text" id="equipo_parado" readonly>
+
+                <label for="equipo_funcionando">Equipo Funcionando:</label>
+                <input type="text" id="equipo_funcionando" readonly>
+
+                <!-- Bloques de Mantenimiento -->
+                <div class="section-title">Bloques de Mantenimiento:</div>
+                <div class="checkbox-group" id="bloques-mantenimiento"></div>
+
+                <!-- Puntos de Seguridad -->
+                <div class="section-title">Puntos de Seguridad:</div>
+                <div class="checkbox-group" id="puntos-seguridad"></div>
+            </form>
+        </div>
+
+        <!-- Navegación entre reportes -->
+        <div class="navigation">
+            <button onclick="navigateReport(-1)">Anterior</button>
+            <button onclick="navigateReport(1)">Siguiente</button>
+        </div>
+    </div>
+
+    <script>
+        const reports = {{ reports | safe }};
+        let currentIndex = 0;
+
+        function selectReport(index) {
+            currentIndex = index;
+            showReport();
+        }
+
+        function navigateReport(direction) {
+            currentIndex = (currentIndex + direction + reports.length) % reports.length;
+            showReport();
+        }
+
+        function showReport() {
+    const report = reports[currentIndex];
+    document.getElementById('cliente').value = report.cliente;
+    document.getElementById('direccion').value = report.direccion;
+    document.getElementById('equipo').value = report.equipo;
+    document.getElementById('fecha').value = report.fecha;
+    document.getElementById('bloque_mantenimiento').value = report.bloque_mantenimiento_momb;
+    document.getElementById('cie').value = report.cie;
+    document.getElementById('resumen').value = report.resumen_actividad;
+    document.getElementById('refaccion').value = report.refaccion_componente;
+    document.getElementById('equipo_parado').value = report.equipo_parado === 1 ? "Sí" : "No";
+    document.getElementById('equipo_funcionando').value = report.equipo_funcionando === 1 ? "Sí" : "No";
+
+    // Bloques de Mantenimiento
+    const bloques = [
+        "reparacion", "mantenimiento", "falla_averia", "fallas_24_7", "emergencia_24_7",
+        "diagnostico_tecnico", "traslado_logistica", "levantamiento_datos_tecnicos",
+        "modernizacion", "montaje_nuevo"
+    ];
+    document.getElementById('bloques-mantenimiento').innerHTML = bloques.map(bloque => `
+        <label>
+            <input type="checkbox" disabled ${report[bloque] == 1 ? "checked" : ""}> ${bloque.replace(/_/g, ' ')}
+        </label>`).join('');
+
+    // Puntos de Seguridad
+    const puntos = [
+        "micro_inf_final", "micro_sup_final", "stop_foso", "micro_lim_vel", "micro_acunamiento",
+        "micro_polea_tensora", "micro_puertas_cab", "micro_puertas_ext", "stop_techo_cabina"
+    ];
+    document.getElementById('puntos-seguridad').innerHTML = puntos.map(punto => `
+        <label>
+            <input type="checkbox" disabled ${report[punto] == 1 ? "checked" : ""}> ${punto.replace(/_/g, ' ')}
+        </label>`).join('');
+}
+
+// Mostrar el primer reporte al cargar la página
+if (reports.length > 0) showReport();
+
+
+// Mostrar el primer reporte al cargar la página
+if (reports.length > 0) showReport();
+
+
+        // Mostrar el primer reporte al cargar
+        if (reports.length > 0) showReport();
+    </script>
+</body>
+</html>
