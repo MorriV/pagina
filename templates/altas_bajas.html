@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Altas y Bajas</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/altas_bajas.css') }}">
+</head>
+
+<body>
+    <div class="container">
+        <h1>Altas y Bajas</h1>
+
+        <!-- Sección de ubicaciones -->
+        <h2>Ubicaciones</h2>
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Nombre</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for ubicacion in ubicaciones %}
+                    <tr onclick="selectUbicacion({{ ubicacion.id_ubicacion }})">
+                        <td>{{ ubicacion.id_ubicacion }}</td>
+                        <td>{{ ubicacion.nombre }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <button onclick="eliminarUbicacion()">Eliminar</button>
+
+        <!-- Alta de ubicaciones -->
+        <h3>Alta</h3>
+        <input type="text" id="nueva_ubicacion" placeholder="Nombre de la nueva ubicación">
+        <button onclick="darAltaUbicacion()">Dar Alta</button>
+
+        <!-- Sección de clientes -->
+        <h2>Clientes</h2>
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Nombre</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for cliente in clientes %}
+                    <tr onclick="selectCliente({{ cliente.id_cliente }})">
+                        <td>{{ cliente.id_cliente }}</td>
+                        <td>{{ cliente.nombre }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <button onclick="eliminarCliente()">Eliminar</button>
+
+        <!-- Alta de clientes -->
+        <h3>Alta</h3>
+        <input type="text" id="nuevo_cliente" placeholder="Nombre del nuevo cliente">
+        <button onclick="darAltaCliente()">Dar Alta</button>
+        <button class="back-btn" onclick="window.history.back()">Regresar</button>
+    </div>
+
+    <script>
+        let selectedUbicacionId = null;
+        let selectedClienteId = null;
+
+        function selectUbicacion(id) {
+            selectedUbicacionId = id;
+        }
+
+        function eliminarUbicacion() {
+            if (!selectedUbicacionId) {
+                alert("Selecciona una ubicación para eliminar.");
+                return;
+            }
+            fetch(`/eliminar_ubicacion/${selectedUbicacionId}`, { method: "POST" })
+                .then(response => {
+                    if (response.ok) {
+                        alert("Ubicación eliminada con éxito.");
+                        location.reload();  // Recargar la página para actualizar la tabla
+                    } else {
+                        alert("Hubo un error al eliminar la ubicación.");
+                    }
+                })
+                .catch(err => console.error('Error al eliminar ubicación:', err));
+        }
+
+
+        function darAltaUbicacion() {
+            const nombre = document.getElementById("nueva_ubicacion").value;
+            if (!nombre) {
+                alert("Ingresa el nombre de la nueva ubicación.");
+                return;
+            }
+            fetch(`/dar_alta_ubicacion`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ nombre })
+            })
+                .then(() => location.reload())
+                .catch(err => console.error(err));
+        }
+
+        function selectCliente(id) {
+            selectedClienteId = id;
+        }
+
+        function eliminarCliente() {
+            if (!selectedClienteId) {
+                alert("Selecciona un cliente para eliminar.");
+                return;
+            }
+            fetch(`/eliminar_cliente/${selectedClienteId}`, { method: "POST" })
+                .then(response => {
+                    if (response.ok) {
+                        alert("Cliente eliminado con éxito.");
+                        location.reload();  // Recargar la página para actualizar la tabla
+                    } else {
+                        alert("Hubo un error al eliminar el cliente.");
+                    }
+                })
+                .catch(err => console.error('Error al eliminar cliente:', err));
+        }
+
+
+        function darAltaCliente() {
+            const nombre = document.getElementById("nuevo_cliente").value;
+            if (!nombre) {
+                alert("Ingresa el nombre del nuevo cliente.");
+                return;
+            }
+            fetch(`/dar_alta_cliente`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ nombre })
+            })
+                .then(() => location.reload())
+                .catch(err => console.error(err));
+        }
+    </script>
+</body>
+
+</html>

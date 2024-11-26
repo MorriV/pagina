@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Descarga</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/descarga.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>Descarga</h1>
+        <div class="filter-container">
+            <label for="filter">Filtro:</label>
+            <select id="filter" name="filter">
+                <option value="cliente">Cliente</option>
+                <option value="ubicacion">Ubicación</option>
+                <option value="tecnico">Técnico</option>
+            </select>
+            <input type="text" id="filterValue" placeholder="Escriba el valor del filtro">
+            <button onclick="buscarReportes()">Buscar</button>
+        </div>
+        <div class="table-container">
+            <table id="tabla-reportes">
+                <thead>
+                    <tr>
+                        <th>Cliente</th>
+                        <th>Ubicación</th>
+                        <th>Técnico</th>
+                        <th>Fecha</th>
+                        <th>Resumen</th>
+                    </tr>
+                </thead>
+                <tbody id="reportTable">
+                    <tr data-equipo_parado="No" data-equipo_funcionando="Sí">
+
+                    </tr>
+                </tbody>
+                
+            </table>
+        </div>
+        <div class="buttons-container">
+            <button onclick="descargarFiltrados()">Descargar Todos</button>
+            <button onclick="descargarSeleccion()">Descargar Selección</button>
+        </div>
+    </div>
+    <script src="{{ url_for('static', filename='js/descarga.js') }}"></script>
+</body>
+</html>

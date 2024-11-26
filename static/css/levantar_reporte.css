@@ -76,3 +76,18 @@ body {
 .form-container button:hover {
     background-color: #0056b3;
 }
+
+.back-btn {
+    background-color: #6c757d; /* Gris */
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+    margin: 10px 0;
+}
+
+.back-btn:hover {
+    background-color: #5a6268; /* Gris más oscuro */
+}

@@ -1,0 +1,38 @@
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: linear-gradient(135deg, #4a90e2, #005082); /* Fondo degradado */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+.container {
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    text-align: center;
+    width: 60%;
+}
+.user-container table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.user-container th, td {
+    border: 1px solid #ccc;
+    padding: 10px;
+    text-align: left;
+}
+
+.create-user {
+    margin-top: 20px;
+}
+
+.create-user input, .create-user select, .create-user button {
+    margin: 5px;
+    padding: 10px;
+    display: block;
+}

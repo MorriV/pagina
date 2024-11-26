@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Visualizar Técnicos y Reportes</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/visualizar.css') }}">
+</head>
+
+<body>
+    <div class="container">
+        <h1>Visualizar Técnicos y Reportes</h1>
+
+        <!-- Tabla de Técnicos -->
+        <h2>Técnicos</h2>
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID Técnico</th>
+                        <th>Usuario</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for tecnico in tecnicos %}
+                    <tr onclick="selectTecnico({{ tecnico.id_usuario }})">
+                        <td>{{ tecnico.id_usuario }}</td>
+                        <td>{{ tecnico.nombre_usuario }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Tabla de Reportes del Técnico -->
+        <h2>Reportes Técnico</h2>
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Cliente</th>
+                        <th>Ubicación</th>
+                        <th>Equipo</th>
+                        <th>Fecha</th>
+                    </tr>
+                </thead>
+                <tbody id="reportes-tecnico">
+                    <!-- Esta tabla será llenada dinámicamente -->
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Detalles de Reportes -->
+        <h2>Detalles de Reportes</h2>
+        <div class="form-container">
+            <form>
+                <label for="cliente">Cliente:</label>
+                <input type="text" id="cliente" readonly>
+
+                <label for="ubicacion">Ubicación:</label>
+                <input type="text" id="ubicacion" readonly>
+
+                <label for="equipo">Equipo:</label>
+                <input type="text" id="equipo" readonly>
+
+                <label for="fecha">Fecha:</label>
+                <input type="text" id="fecha" readonly>
+
+                <label for="bloque_mantenimiento">Bloque de Mantenimiento (MOMB):</label>
+                <input type="text" id="bloque_mantenimiento" readonly>
+
+                <label for="cie">CIE (Control Interno de Equipo):</label>
+                <input type="text" id="cie" readonly>
+
+                <label for="resumen">Resumen de Actividad:</label>
+                <textarea id="resumen" readonly></textarea>
+
+                <label for="refaccion">Refacción o Componente por Sustituir:</label>
+                <textarea id="refaccion" readonly></textarea>
+
+                <label for="equipo_parado">Equipo Parado:</label>
+                <input type="text" id="equipo_parado" readonly>
+
+                <label for="equipo_funcionando">Equipo Funcionando:</label>
+                <input type="text" id="equipo_funcionando" readonly>
+            </form>
+        </div>
+
+        <!-- Bloques de mantenimiento -->
+        <label for="bloques_mantenimiento">Bloques de Mantenimiento:</label>
+        <div id="bloques_mantenimiento" class="group-section">
+            <label>Reparación:</label>
+            <input type="text" id="reparacion" readonly>
+            <label>Mantenimiento:</label>
+            <input type="text" id="mantenimiento" readonly>
+            <label>Falla Avería:</label>
+            <input type="text" id="falla_averia" readonly>
+            <label>Fallas 24/7:</label>
+            <input type="text" id="fallas_24_7" readonly>
+            <label>Emergencia 24/7:</label>
+            <input type="text" id="emergencia_24_7" readonly>
+            <label>Diagnóstico Técnico:</label>
+            <input type="text" id="diagnostico_tecnico" readonly>
+            <label>Traslado Logística:</label>
+            <input type="text" id="traslado_logistica" readonly>
+            <label>Levantamiento Datos Técnicos:</label>
+            <input type="text" id="levantamiento_datos_tecnicos" readonly>
+            <label>Modernización:</label>
+            <input type="text" id="modernizacion" readonly>
+            <label>Montaje Nuevo:</label>
+            <input type="text" id="montaje_nuevo" readonly>
+        </div>
+
+        <!-- Puntos de Seguridad -->
+        <label for="puntos_seguridad">Puntos de Seguridad:</label>
+        <div id="puntos_seguridad" class="group-section">
+            <label>Micro Inf. Final:</label>
+            <input type="text" id="micro_inf_final" readonly>
+            <label>Micro Sup. Final:</label>
+            <input type="text" id="micro_sup_final" readonly>
+            <label>Stop Foso:</label>
+            <input type="text" id="stop_foso" readonly>
+            <label>Micro Lim. Vel.:</label>
+            <input type="text" id="micro_lim_vel" readonly>
+            <label>Micro Acuñamiento:</label>
+            <input type="text" id="micro_acunamiento" readonly>
+            <label>Micro Polea Tensora:</label>
+            <input type="text" id="micro_polea_tensora" readonly>
+            <label>Micro Puertas Cabina:</label>
+            <input type="text" id="micro_puertas_cab" readonly>
+            <label>Micro Puertas Ext.:</label>
+            <input type="text" id="micro_puertas_ext" readonly>
+            <label>Stop Techo Cabina:</label>
+            <input type="text" id="stop_techo_cabina" readonly>
+        </div>
+
+
+
+        <!-- Navegación entre reportes -->
+        <div class="navigation">
+            <button onclick="navigateReport(-1)">Anterior</button>
+            <button onclick="deleteReport()">Eliminar</button>
+            <button onclick="navigateReport(1)">Siguiente</button>
+        </div>
+        <button class="back-btn" onclick="window.history.back()">Regresar</button>
+    </div>
+
+    <script>
+        let currentTecnicoId = null; // ID del técnico seleccionado
+        let reportes = []; // Lista de reportes del técnico seleccionado
+        let currentIndex = 0; // Índice del reporte actualmente mostrado
+
+        function updateReportesTable() {
+            const tbody = document.getElementById('reportes-tecnico');
+            tbody.innerHTML = reportes.map((reporte, index) => `
+        <tr onclick="selectReporte(${index})">
+            <td>${reporte.cliente}</td>
+            <td>${reporte.ubicacion}</td>
+            <td>${reporte.equipo}</td>
+            <td>${reporte.fecha}</td>
+        </tr>
+    `).join('');
+        }
+
+
+        // Función para eliminar el reporte actual
+        function deleteReport() {
+            if (reportes.length > 0) {
+                const reportId = reportes[currentIndex]?.id_reporte; // Asegúrate de usar el ID del reporte actual
+                if (!reportId) {
+                    alert("No se puede eliminar este reporte.");
+                    return;
+                }
+                fetch(`/delete_report/${reportId}`, {
+                    method: 'DELETE'
+                })
+                    .then(response => {
+                        if (response.ok) {
+                            alert("Reporte eliminado correctamente.");
+                            reportes.splice(currentIndex, 1); // Eliminar el reporte de la lista
+                            // Actualizar la tabla de reportes
+                            updateReportesTable();
+                            if (reportes.length > 0) {
+                                currentIndex = currentIndex % reportes.length; // Ajustar el índice
+                                showReport(); // Mostrar el siguiente reporte
+                            } else {
+                                clearReportDetails(); // Limpiar los detalles si no quedan reportes
+                            }
+                        } else {
+                            throw new Error("Error al eliminar el reporte.");
+                        }
+                    })
+                    .catch(error => {
+                        console.error(error);
+                        alert("Error al eliminar el reporte.");
+                    });
+            }
+        }
+
+
+        // Seleccionar un técnico
+        function selectTecnico(id) {
+            currentTecnicoId = id;
+            fetch(`/get_reportes_tecnico/${id}`)
+                .then(response => response.json())
+                .then(data => {
+                    reportes = data; // Actualizar la lista de reportes
+                    updateReportesTable(); // Actualizar la tabla de reportes técnicos
+                    if (reportes.length > 0) {
+                        currentIndex = 0; // Resetear el índice al primero
+                        showReport(); // Mostrar el primer reporte
+                    } else {
+                        clearReportDetails(); // Limpiar los detalles si no hay reportes
+                    }
+                })
+                .catch(error => console.error("Error al obtener reportes:", error));
+        }
+
+        // Actualizar la tabla de reportes técnicos
+        function updateReportesTable() {
+            const tbody = document.getElementById('reportes-tecnico');
+            tbody.innerHTML = reportes.map((reporte, index) => `
+                <tr onclick="selectReporte(${index})">
+                    <td>${reporte.cliente}</td>
+                    <td>${reporte.ubicacion}</td>
+                    <td>${reporte.equipo}</td>
+                    <td>${reporte.fecha}</td>
+                </tr>
+            `).join('');
+        }
+
+        // Seleccionar un reporte desde la tabla
+        function selectReporte(index) {
+            currentIndex = index; // Actualizar el índice
+            showReport(); // Mostrar los detalles del reporte
+        }
+
+        // Navegar entre reportes (Anterior/Siguiente)
+        function navigateReport(direction) {
+            if (reportes.length > 0) {
+                currentIndex = (currentIndex + direction + reportes.length) % reportes.length; // Navegación circular
+                showReport(); // Actualizar los detalles del reporte mostrado
+            }
+        }
+
+        // Mostrar los detalles del reporte
+        function showReport() {
+            const report = reportes[currentIndex]; // Obtener el reporte actual
+            if (!report) return;
+
+            document.getElementById('cliente').value = report.cliente || "N/A";
+            document.getElementById('ubicacion').value = report.ubicacion || "N/A";
+            document.getElementById('equipo').value = report.equipo || "N/A";
+            document.getElementById('fecha').value = report.fecha || "N/A";
+            document.getElementById('bloque_mantenimiento').value = report.bloque_mantenimiento_momb || "N/A";
+            document.getElementById('cie').value = report.cie || "N/A";
+            document.getElementById('resumen').value = report.resumen_actividad || "N/A";
+            document.getElementById('refaccion').value = report.refaccion_componente || "N/A";
+            document.getElementById('equipo_parado').value = report.equipo_parado === 1 ? "Sí" : "No";
+            document.getElementById('equipo_funcionando').value = report.equipo_funcionando === 1 ? "Sí" : "No";
+
+            // Bloques de Mantenimiento
+            document.getElementById('reparacion').value = report.reparacion === 1 ? "Sí" : "No";
+            document.getElementById('mantenimiento').value = report.mantenimiento === 1 ? "Sí" : "No";
+            document.getElementById('falla_averia').value = report.falla_averia === 1 ? "Sí" : "No";
+            document.getElementById('fallas_24_7').value = report.fallas_24_7 === 1 ? "Sí" : "No";
+            document.getElementById('emergencia_24_7').value = report.emergencia_24_7 === 1 ? "Sí" : "No";
+            document.getElementById('diagnostico_tecnico').value = report.diagnostico_tecnico === 1 ? "Sí" : "No";
+            document.getElementById('traslado_logistica').value = report.traslado_logistica === 1 ? "Sí" : "No";
+            document.getElementById('levantamiento_datos_tecnicos').value = report.levantamiento_datos_tecnicos === 1 ? "Sí" : "No";
+            document.getElementById('modernizacion').value = report.modernizacion === 1 ? "Sí" : "No";
+            document.getElementById('montaje_nuevo').value = report.montaje_nuevo === 1 ? "Sí" : "No";
+
+            // Puntos de Seguridad
+            document.getElementById('micro_inf_final').value = report.micro_inf_final === 1 ? "Sí" : "No";
+            document.getElementById('micro_sup_final').value = report.micro_sup_final === 1 ? "Sí" : "No";
+            document.getElementById('stop_foso').value = report.stop_foso === 1 ? "Sí" : "No";
+            document.getElementById('micro_lim_vel').value = report.micro_lim_vel === 1 ? "Sí" : "No";
+            document.getElementById('micro_acunamiento').value = report.micro_acunamiento === 1 ? "Sí" : "No";
+            document.getElementById('micro_polea_tensora').value = report.micro_polea_tensora === 1 ? "Sí" : "No";
+            document.getElementById('micro_puertas_cab').value = report.micro_puertas_cab === 1 ? "Sí" : "No";
+            document.getElementById('micro_puertas_ext').value = report.micro_puertas_ext === 1 ? "Sí" : "No";
+            document.getElementById('stop_techo_cabina').value = report.stop_techo_cabina === 1 ? "Sí" : "No";
+        }
+
+        // Limpiar detalles del reporte
+        function clearReportDetails() {
+            document.querySelectorAll('input, textarea').forEach(input => input.value = "");
+        }
+    </script>
+
+
+
+</body>
+
+</html>

@@ -1,21 +1,32 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Levantar Reporte</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/levantar_reporte.css') }}">
 </head>
+
 <body>
     <div class="form-container">
         <h1>Levantar Reporte</h1>
         <form action="/levantar_reporte" method="POST">
             <!-- Campos básicos -->
             <label for="cliente">Cliente:</label>
-            <input type="text" id="cliente" name="cliente" placeholder="Nombre del cliente" required>
+            <select id="cliente" name="id_cliente" required>
+                {% for cliente in clientes %}
+                <option value="{{ cliente.id_cliente }}">{{ cliente.nombre }}</option>
+                {% endfor %}
+            </select>
 
-            <label for="direccion">Dirección:</label>
-            <input type="text" id="direccion" name="direccion" placeholder="Dirección del cliente" required>
+            <label for="ubicacion">Ubicación:</label>
+            <select id="ubicacion" name="id_ubicacion" required>
+                {% for ubicacion in ubicaciones %}
+                <option value="{{ ubicacion.id_ubicacion }}">{{ ubicacion.nombre }}</option>
+                {% endfor %}
+            </select>
+
 
             <label for="equipo">Equipo:</label>
             <input type="text" id="equipo" name="equipo" placeholder="Nombre o ID del equipo" required>
@@ -25,61 +36,161 @@
 
 
             <label for="bloque_mantenimiento">Bloque de Mantenimiento (MOMB):</label>
-            <input type="text" id="bloque_mantenimiento" name="bloque_mantenimiento" placeholder="Descripción del bloque" required>
+            <input type="text" id="bloque_mantenimiento" name="bloque_mantenimiento"
+                placeholder="Descripción del bloque" required>
 
             <label for="cie">CIE (Control Interno de Equipo):</label>
             <input type="text" id="cie" name="cie" placeholder="Código CIE" required>
 
             <label for="resumen">Resumen de Actividad:</label>
-            <textarea id="resumen" name="resumen" rows="4" placeholder="Resumen de la actividad realizada" required></textarea>
+            <textarea id="resumen" name="resumen" rows="4" placeholder="Resumen de la actividad realizada"
+                required></textarea>
 
             <label for="refaccion">Refacción o Componente por Sustituir:</label>
-            <textarea id="refaccion" name="refaccion" rows="3" placeholder="Detalles de la refacción o componente" required></textarea>
+            <textarea id="refaccion" name="refaccion" rows="3" placeholder="Detalles de la refacción o componente"
+                required></textarea>
 
             <!-- Estado del equipo -->
             <label>Equipo Parado:</label>
             <select id="equipo_parado" name="equipo_parado" required>
                 <option value="1">Sí</option>
-                <option value="0">No</option>
+                <option value="0" selected>No</option>
             </select>
 
             <label>Equipo Funcionando:</label>
             <select id="equipo_funcionando" name="equipo_funcionando" required>
                 <option value="1">Sí</option>
-                <option value="0">No</option>
+                <option value="0" selected>No</option>
             </select>
 
             <!-- Bloques de mantenimiento -->
             <div class="section-title">Bloques de Mantenimiento:</div>
-            <div class="checkbox-group">
-                <label><input type="checkbox" name="bloque[]" value="reparacion"> Reparación</label>
-                <label><input type="checkbox" name="bloque[]" value="mantenimiento"> Mantenimiento</label>
-                <label><input type="checkbox" name="bloque[]" value="falla_averia"> Falla/Avería</label>
-                <label><input type="checkbox" name="bloque[]" value="fallas_24_7"> Fallas 24/7</label>
-                <label><input type="checkbox" name="bloque[]" value="emergencia_24_7"> Emergencia 24/7</label>
-                <label><input type="checkbox" name="bloque[]" value="diagnostico_tecnico"> Diagnóstico Técnico</label>
-                <label><input type="checkbox" name="bloque[]" value="traslado_logistica"> Traslado de Logística</label>
-                <label><input type="checkbox" name="bloque[]" value="levantamiento_datos_tecnicos"> Levantamiento de Datos Técnicos</label>
-                <label><input type="checkbox" name="bloque[]" value="modernizacion"> Modernización</label>
-                <label><input type="checkbox" name="bloque[]" value="montaje_nuevo"> Montaje Nuevo</label>
+            <div class="combobox-group">
+                <label for="reparacion">Reparación:</label>
+                <select id="reparacion" name="bloque_reparacion">
+                    <option value="1">Sí</option>
+                    <option value="0" selected>No</option>
+                </select>
+
+                <label for="mantenimiento">Mantenimiento:</label>
+                <select id="mantenimiento" name="mantenimiento">
+                    <option value="1">Sí</option>
+                    <option value="0" selected>No</option>
+                </select>
+
+                <label for="falla_averia">Falla/Avería:</label>
+                <select id="falla_averia" name="bloque_falla_averia">
+                    <option value="1">Sí</option>
+                    <option value="0" selected>No</option>
+                </select>
+
+                <label for="fallas_24_7">Fallas 24/7:</label>
+                <select id="fallas_24_7" name="bloque_fallas_24_7">
+                    <option value="1">Sí</option>
+                    <option value="0" selected>No</option>
+                </select>
+
+                <label for="emergencia_24_7">Emergencia 24/7:</label>
+                <select id="emergencia_24_7" name="bloque_emergencia_24_7">
+                    <option value="1">Sí</option>
+                    <option value="0" selected>No</option>
+                </select>
+
+                <label for="diagnostico_tecnico">Diagnóstico Técnico:</label>
+                <select id="diagnostico_tecnico" name="bloque_diagnostico_tecnico">
+                    <option value="1">Sí</option>
+                    <option value="0" selected>No</option>
+                </select>
+
+                <label for="traslado_logistica">Traslado de Logística:</label>
+                <select id="traslado_logistica" name="bloque_traslado_logistica">
+                    <option value="1">Sí</option>
+                    <option value="0" selected>No</option>
+                </select>
+
+                <label for="levantamiento_datos_tecnicos">Levantamiento de Datos Técnicos:</label>
+                <select id="levantamiento_datos_tecnicos" name="bloque_levantamiento_datos_tecnicos">
+                    <option value="1">Sí</option>
+                    <option value="0" selected>No</option>
+                </select>
+
+                <label for="modernizacion">Modernización:</label>
+                <select id="modernizacion" name="bloque_modernizacion">
+                    <option value="1">Sí</option>
+                    <option value="0" selected>No</option>
+                </select>
+
+                <label for="montaje_nuevo">Montaje Nuevo:</label>
+                <select id="montaje_nuevo" name="bloque_montaje_nuevo">
+                    <option value="1">Sí</option>
+                    <option value="0" selected>No</option>
+                </select>
+                
             </div>
 
             <!-- Puntos de seguridad -->
             <div class="section-title">Puntos de Seguridad:</div>
-            <div class="checkbox-group">
-                <label><input type="checkbox" name="seguridad[]" value="micro_inf_final"> Micro Inf. Final</label>
-                <label><input type="checkbox" name="seguridad[]" value="micro_sup_final"> Micro Sup. Final</label>
-                <label><input type="checkbox" name="seguridad[]" value="stop_foso"> Stop de Foso</label>
-                <label><input type="checkbox" name="seguridad[]" value="micro_lim_vel"> Micro Lim. de Vel.</label>
-                <label><input type="checkbox" name="seguridad[]" value="micro_acunamiento"> Micro Acuñamiento</label>
-                <label><input type="checkbox" name="seguridad[]" value="micro_polea_tensora"> Micro Polea Tensora</label>
-                <label><input type="checkbox" name="seguridad[]" value="micro_puertas_cab"> Micro Puertas Cab.</label>
-                <label><input type="checkbox" name="seguridad[]" value="micro_puertas_ext"> Micro Puertas Ext.</label>
-                <label><input type="checkbox" name="seguridad[]" value="stop_techo_cabina"> Stop Techo Cabina</label>
+            <div class="combobox-group">
+                <label for="micro_inf_final">Micro Inf. Final:</label>
+                <select id="micro_inf_final" name="seguridad_micro_inf_final">
+                    <option value="1">Sí</option>
+                    <option value="0" selected>No</option>
+                </select>
+
+                <label for="micro_sup_final">Micro Sup. Final:</label>
+                <select id="micro_sup_final" name="seguridad_micro_sup_final">
+                    <option value="1">Sí</option>
+                    <option value="0" selected>No</option>
+                </select>
+
+                <label for="stop_foso">Stop de Foso:</label>
+                <select id="stop_foso" name="seguridad_stop_foso">
+                    <option value="1">Sí</option>
+                    <option value="0" selected>No</option>
+                </select>
+
+                <label for="micro_lim_vel">Micro Lim. de Vel.:</label>
+                <select id="micro_lim_vel" name="seguridad_micro_lim_vel">
+                    <option value="1">Sí</option>
+                    <option value="0" selected>No</option>
+                </select>
+
+                <label for="micro_acunamiento">Micro Acuñamiento:</label>
+                <select id="micro_acunamiento" name="seguridad_micro_acunamiento">
+                    <option value="1">Sí</option>
+                    <option value="0" selected>No</option>
+                </select>
+
+                <label for="micro_polea_tensora">Micro Polea Tensora:</label>
+                <select id="micro_polea_tensora" name="seguridad_micro_polea_tensora">
+                    <option value="1">Sí</option>
+                    <option value="0" selected>No</option>
+                </select>
+
+                <label for="micro_puertas_cab">Micro Puertas Cab.:</label>
+                <select id="micro_puertas_cab" name="seguridad_micro_puertas_cab">
+                    <option value="1">Sí</option>
+                    <option value="0" selected>No</option>
+                </select>
+
+                <label for="micro_puertas_ext">Micro Puertas Ext.:</label>
+                <select id="micro_puertas_ext" name="seguridad_micro_puertas_ext">
+                    <option value="1">Sí</option>
+                    <option value="0" selected>No</option>
+                </select>
+
+                <label for="stop_techo_cabina">Stop Techo Cabina:</label>
+                <select id="stop_techo_cabina" name="seguridad_stop_techo_cabina">
+                    <option value="1">Sí</option>
+                    <option value="0" selected>No</option>
+                </select>
             </div>
 
+
             <button type="submit">Guardar Reporte</button>
+            <button class="back-btn" onclick="window.history.back()">Regresar</button>
         </form>
     </div>
 </body>
+
 </html>

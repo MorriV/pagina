@@ -35,3 +35,19 @@ body {
 .pdc-container button:hover {
     background-color: #0056b3;
 }
+
+.logout-btn {
+    background-color: #d9534f; /* Rojo */
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    margin-top: 20px;
+    cursor: pointer;
+}
+
+.logout-btn:hover {
+    background-color: #c9302c; /* Rojo más oscuro */
+    color: white;
+}

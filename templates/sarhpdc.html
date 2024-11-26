@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel SARH</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/sarhpdc.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>Panel SARH</h1>
+        <div class="user-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Usuario</th>
+                        <th>Rol</th>
+                        <th>Acción</th>
+                    </tr>
+                </thead>
+                <tbody id="userTable">
+                    {% for usuario in usuarios %}
+                    <tr data-id="{{ usuario['id_usuario'] }}">
+                        <td>{{ usuario['id_usuario'] }}</td>
+                        <td>{{ usuario['nombre_usuario'] }}</td>
+                        <td>{{ usuario['rol'] }}</td>
+                        <td>
+                            <button onclick="eliminarUsuario({{ usuario['id_usuario'] }})">Eliminar</button>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <div class="create-user">
+            <h2>Crear Nuevo Usuario</h2>
+            <input type="text" id="username" placeholder="Usuario">
+            <input type="password" id="password" placeholder="Contraseña">
+            <select id="role">
+                <option value="administrador">Administrador</option>
+                <option value="user">Usuario</option>
+                <option value="sarh">SARH</option>
+            </select>
+            <button onclick="crearUsuario()">Crear Usuario</button>
+        </div>
+    </div>
+    <script src="{{ url_for('static', filename='js/sarhpdc.js') }}"></script>
+</body>
+</html>
