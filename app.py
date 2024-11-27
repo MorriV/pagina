@@ -318,40 +318,65 @@ def crear_app():
     def buscar_reportes():
         filtro = request.args.get('filter')
         valor = request.args.get('value')
-        
+
         query = '''
-            SELECT r.id_reporte, c.nombre AS cliente, u.nombre AS ubicacion, t.nombre_usuario AS tecnico, r.fecha, r.resumen_actividad AS resumen
+            SELECT r.id_reporte, c.nombre AS cliente, u.nombre AS ubicacion, 
+                t.nombre_usuario AS tecnico, r.fecha, r.resumen_actividad AS resumen, 
+                r.equipo, r.refaccion_componente
             FROM reportes r
             JOIN clientes c ON r.id_cliente = c.id_cliente
             JOIN ubicaciones u ON r.id_ubicacion = u.id_ubicacion
             JOIN usuarios t ON r.id_usuario = t.id_usuario
         '''
-        
+
         if filtro == 'cliente':
             query += " WHERE c.nombre LIKE ?"
         elif filtro == 'ubicacion':
             query += " WHERE u.nombre LIKE ?"
         elif filtro == 'tecnico':
             query += " WHERE t.nombre_usuario LIKE ?"
-        
+
+        # Ordenar siempre por fecha en orden cronológico
+        query += " ORDER BY r.fecha DESC"
+
         conn = get_db_connection()
         reportes = conn.execute(query, ('%' + valor + '%',)).fetchall()
         conn.close()
 
         return jsonify([dict(row) for row in reportes])
 
+
+
     @app.route('/descargar_filtrados', methods=['POST'])
     @login_required(role='administrador')
     def descargar_filtrados():
-        data = request.json.get('reportes', [])
-        if not data:
+        # Obtener los IDs de los reportes enviados desde el frontend
+        ids_reportes = request.json.get('ids_reportes', [])
+        print("IDs recibidos:", ids_reportes)  # Verifica los IDs recibidos
+
+        if not ids_reportes:
             return "No hay reportes para descargar", 400
 
-        # Proveer valores predeterminados para campos que puedan faltar
-        for reporte in data:
-            reporte.setdefault('equipo', "")
-            reporte.setdefault('equipo_parado', "No")
-            reporte.setdefault('equipo_funcionando', "No")
+        # Consultar todos los reportes correspondientes a los IDs recibidos
+        query = '''
+            SELECT r.*, c.nombre AS cliente, u.nombre AS ubicacion, t.nombre_usuario AS tecnico
+            FROM reportes r
+            JOIN clientes c ON r.id_cliente = c.id_cliente
+            JOIN ubicaciones u ON r.id_ubicacion = u.id_ubicacion
+            JOIN usuarios t ON r.id_usuario = t.id_usuario
+            WHERE r.id_reporte IN ({})
+            ORDER BY r.fecha DESC
+        '''.format(','.join('?' for _ in ids_reportes))  # Genera una lista de placeholders para evitar SQL injection
+
+        conn = get_db_connection()
+        reportes = conn.execute(query, ids_reportes).fetchall()
+        conn.close()
+
+        if not reportes:
+            return "No se encontraron reportes para los IDs proporcionados", 404
+
+        # Convertir los reportes en diccionarios
+        data = [dict(reporte) for reporte in reportes]
 
         # Generar el PDF
         pdf = generar_pdf_con_formato(data)
@@ -359,10 +384,6 @@ def crear_app():
         response.headers['Content-Type'] = 'application/pdf'
         response.headers['Content-Disposition'] = 'attachment; filename=reportes_filtrados.pdf'
         return response
-
-
-
-
 
     @app.route('/descargar_seleccion/<int:reporte_id>', methods=['GET'])
     @login_required(role='administrador')
@@ -410,8 +431,9 @@ def crear_app():
             pdf.set_font("Arial", size=12)
             pdf.cell(95, 10, f"Cliente: {reporte['cliente']}", border=0)
             pdf.cell(95, 10, f"Ubicación: {reporte['ubicacion']}", border=0, ln=True)
-            pdf.cell(95, 10, f"Equipo: {reporte['equipo']}", border=0)
-            pdf.cell(95, 10, f"Fecha: {reporte['fecha']}", border=0, ln=True)
+            pdf.cell(95, 10, f"Técnico: {reporte.get('tecnico', 'Sin técnico')}", border=0)  # Técnico
+            pdf.cell(95, 10, f"Fecha: {reporte.get('fecha', 'Sin fecha')}", border=0, ln=True)
+            pdf.cell(95, 10, f"Equipo: {reporte.get('equipo', 'Sin equipo')}", border=0, ln=True)
             pdf.ln(10)
 
             # Bloques de mantenimiento y Puntos de seguridad en columnas
@@ -446,18 +468,36 @@ def crear_app():
 
             max_items = max(len(bloques), len(puntos_seguridad))
             for i in range(max_items):
-                bloque_label = bloques[i][0] if i < len(bloques) else ""
-                bloque_value = bloques[i][1] if i < len(bloques) else ""
-                bloque_status = f"Sí" if reporte.get(bloque_value, 0) == 1 else "No"
+                # Manejo para bloques de mantenimiento
+                if i < len(bloques):
+                    bloque_label = bloques[i][0]
+                    bloque_value = bloques[i][1]
+                    bloque_status = f"Sí" if reporte.get(bloque_value, 0) == 1 else "No"
+                else:
+                    bloque_label = ""
+                    bloque_status = ""
 
-                punto_label = puntos_seguridad[i][0] if i < len(puntos_seguridad) else ""
-                punto_value = puntos_seguridad[i][1] if i < len(puntos_seguridad) else ""
-                punto_status = f"Sí" if reporte.get(punto_value, 0) == 1 else "No"
+                # Manejo para puntos de seguridad
+                if i < len(puntos_seguridad):
+                    punto_label = puntos_seguridad[i][0]
+                    punto_value = puntos_seguridad[i][1]
+                    punto_status = f"Sí" if reporte.get(punto_value, 0) == 1 else "No"
+                else:
+                    punto_label = ""
+                    punto_status = ""
 
+                # Agregar las celdas correspondientes
                 pdf.cell(95, 10, f"{bloque_label}: {bloque_status}", border=0)
-                pdf.cell(95, 10, f"{punto_label}: {punto_status}", border=0, ln=True)
+                if punto_label:
+                    pdf.cell(95, 10, f"{punto_label}: {punto_status}", border=0, ln=True)
+                else:
+                    pdf.ln()  # Si no hay punto_label, saltar a la siguiente línea
 
             pdf.ln(10)
+
+
+
+
 
             # Resumen de actividad y refacciones
             pdf.cell(0, 10, "Resumen de Actividad:", ln=True)
@@ -475,7 +515,6 @@ def crear_app():
 
 
         return pdf.output(dest='S').encode('latin1')
-
 
 
 
