@@ -16,6 +16,9 @@
                 <option value="ubicacion">Ubicación</option>
                 <option value="tecnico">Técnico</option>
             </select>
+            
+        </div>
+        <div class="filter-container">
             <input type="text" id="filterValue" placeholder="Escriba el valor del filtro">
             <button onclick="buscarReportes()">Buscar</button>
         </div>
@@ -26,8 +29,10 @@
                         <th>Cliente</th>
                         <th>Ubicación</th>
                         <th>Técnico</th>
-                        <th>Fecha</th>
+                        <th>Fecha</th> <!-- Nueva columna para la fecha -->
                         <th>Resumen</th>
+                        <th>Equipo</th>
+                        <th>Refacción</th>
                     </tr>
                 </thead>
                 <tbody id="reportTable">
@@ -42,6 +47,7 @@
             <button onclick="descargarFiltrados()">Descargar Todos</button>
             <button onclick="descargarSeleccion()">Descargar Selección</button>
         </div>
+        <button class="back-btn" onclick="window.history.back()">Regresar</button>
     </div>
     <script src="{{ url_for('static', filename='js/descarga.js') }}"></script>
 </body>

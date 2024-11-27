@@ -9,7 +9,7 @@ body {
 }
 
 .container {
-    max-width: 1200px;
+    max-width: 80%;
     margin: 20px auto;
     background: #fff;
     padding: 20px;
@@ -56,6 +56,7 @@ table tr:hover {
 
 /* Form Styles */
 .form-container {
+    width: 90%;
     margin-bottom: 30px;
 }
 
@@ -100,7 +101,7 @@ input[readonly], textarea[readonly] {
     background: #005082;
     color: #fff;
     border: none;
-    padding: 10px 20px;
+    padding: 5px 10px;
     margin: 0 10px;
     border-radius: 5px;
     cursor: pointer;
@@ -112,7 +113,7 @@ input[readonly], textarea[readonly] {
 }
 
 /* Responsive Design */
-@media (max-width: 768px) {
+@media (max-width: 100%) {
     form {
         grid-template-columns: 1fr;
     }
@@ -136,7 +137,7 @@ input[readonly], textarea[readonly] {
 }
 
 .group-section input {
-    width: 100%;
+    width: 90%;
     margin-bottom: 10px;
     padding: 5px;
     font-size: 14px;

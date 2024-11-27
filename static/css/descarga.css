@@ -6,7 +6,7 @@ body {
 }
 
 .container {
-    max-width: 900px;
+    max-width: 80%;
     margin: 20px auto;
     padding: 20px;
     background-color: white;
@@ -28,15 +28,17 @@ h1 {
 
 .filter-container label {
     font-weight: bold;
+    font-size: 10px;
 }
 
 .filter-container input, .filter-container select, .filter-container button {
     padding: 8px;
-    font-size: 14px;
+    font-size: 10px;
 }
 
 .table-container {
-    margin-top: 20px;
+    margin-bottom: 30px;
+    overflow-x: auto;
 }
 
 table {
@@ -81,4 +83,15 @@ button:hover {
 tr.selected {
     background-color: #d0e6ff; /* Color de fondo para la fila seleccionada */
     color: #000; /* Color del texto */
+}
+
+.back-btn {
+    background-color: #6c757d; /* Gris */
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+    margin: 10px 0;
 }

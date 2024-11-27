@@ -13,9 +13,11 @@ function buscarReportes() {
                     <tr onclick="selectRow(this)" data-id="${reporte.id_reporte}">
                         <td>${reporte.cliente}</td>
                         <td>${reporte.ubicacion}</td>
-                        <td>${reporte.tecnico}</td>
-                        <td>${reporte.fecha}</td>
-                        <td>${reporte.resumen}</td>
+                        <td>${reporte.tecnico || "Sin técnico"}</td> <!-- Agregar técnico -->
+                        <td>${reporte.fecha || "Sin fecha"}</td>
+                        <td>${reporte.resumen || "Sin resumen"}</td>
+                        <td>${reporte.equipo || "Sin equipo"}</td>
+                        <td>${reporte.refaccion_componente || "Sin refacción"}</td>
                     </tr>
                 `;
                 tableBody.innerHTML += row;
@@ -24,27 +26,24 @@ function buscarReportes() {
         .catch(error => console.error('Error al buscar reportes:', error));
 }
 
+
+
 function descargarFiltrados() {
+    // Obtén los IDs de los reportes visibles en la tabla
     const tabla = document.getElementById('reportTable');
     const filas = tabla.querySelectorAll('tr');
-    const reportes = Array.from(filas).map(fila => {
-        const columnas = fila.querySelectorAll('td');
-        return {
-            cliente: columnas[0].textContent.trim(),
-            ubicacion: columnas[1].textContent.trim(),
-            tecnico: columnas[2].textContent.trim(),
-            fecha: columnas[3].textContent.trim(),
-            resumen_actividad: columnas[4].textContent.trim(),
-            equipo: columnas[5]?.textContent.trim() || "", // Incluye equipo si está presente
-            equipo_parado: columnas[6]?.textContent.trim() || "No", // Valor por defecto si no está
-            equipo_funcionando: columnas[7]?.textContent.trim() || "No" // Valor por defecto si no está
-        };
-    });
+    const idsReportes = Array.from(filas).map(fila => fila.getAttribute('data-id'));
 
+    if (idsReportes.length === 0) {
+        alert("No hay reportes para descargar.");
+        return;
+    }
+
+    // Enviar los IDs al servidor
     fetch('/descargar_filtrados', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ reportes }) // Enviar los datos correctamente al servidor
+        body: JSON.stringify({ ids_reportes: idsReportes })
     })
     .then(response => {
         if (response.ok) {
@@ -65,6 +64,7 @@ function descargarFiltrados() {
         alert("Error al descargar los reportes: " + error.message);
     });
 }
+
 
 
 

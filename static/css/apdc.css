@@ -17,7 +17,7 @@ body {
     padding: 20px;
     border-radius: 10px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    width: 300px;
+    width: 80%;
 }
 
 h1 {
@@ -39,24 +39,4 @@ h1 {
     font-size: 16px;
     text-align: center;
     transition: background 0.3s ease;
-}
-
-.btn:hover {
-    background: #005082;
-}
-
-.btn-logout {
-    background-color: #d9534f; /* Rojo */
-    color: white;
-    padding: 10px 20px;
-    text-decoration: none;
-    border-radius: 5px;
-    font-size: 16px;
-    margin-top: 20px;
-    display: inline-block;
-}
-
-.btn-logout:hover {
-    background-color: #c9302c; /* Rojo más oscuro */
-    color: white;
 }
